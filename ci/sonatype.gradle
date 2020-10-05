@@ -28,12 +28,14 @@ uploadArchives {
                 name 'pipeline'
                 packaging 'jar'
                 // optionally artifactId can be defined here
-                description 'inferencer is a Spark library for which curate files through given input parameters and load thenm into target, source can be HDFS,S3,Local filesystem to another distributed/local filesystem with Schema retained formats(preferred parquet/ORC/Avro)'
+                description 'Pipeline is a application framework to orchestrate and stitch multiple apps to run sequentially.\n' +
+                        '\n' +
+                        'Framework provides sequential dependency,configuration sharing, restartability, sequence checking(order of execution) for applications'
                 url 'https://bkosaraju.github.io/pipeline'
 
                 scm {
-                    connection 'scm:git:https://github.com/bkosaraju/inferencer.git'
-                    url 'https://github.com/bkosaraju/inferencer'
+                    connection 'scm:git:https://github.com/bkosaraju/pipeline.git'
+                    url 'https://github.com/bkosaraju/pipeline'
                 }
 
                 licenses {
