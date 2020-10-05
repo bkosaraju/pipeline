@@ -24,7 +24,7 @@
 
 <!--
 command to Import Into Jenkins
-java -jar jenkins-cli.jar -s http://ec2-13-211-252-242.ap-southeast-2.compute.amazonaws.com:8000/ -auth @.jenkins/auth create-job <job_name> <thisFile
+java -jar jenkins-cli.jar -s http://xxxxxxxxx/ -auth @.jenkins/auth create-job <job_name> <thisFile
 -->
 <org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject plugin="workflow-multibranch@2.21">
     <actions/>
@@ -63,7 +63,7 @@ java -jar jenkins-cli.jar -s http://ec2-13-211-252-242.ap-southeast-2.compute.am
     <jenkins.branch.BranchSource>
         <source class="jenkins.plugins.git.GitSCMSource" plugin="git@3.10.1">
             <id>16ae8f0f-8ea0-4166-9e4d-87b857ddafc2</id>
-            <remote>git@github.com:wearedatamarvels/pipeline.git</remote>
+            <remote>git@xxxxxxxxx.git</remote>
             <credentialsId>jenkins</credentialsId>
             <traits>
                 <jenkins.plugins.git.traits.BranchDiscoveryTrait/>
