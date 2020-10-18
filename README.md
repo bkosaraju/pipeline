@@ -1,4 +1,10 @@
-[![bkosaraju](https://circleci.com/gh/bkosaraju/pipeline.svg?style=svg)](https://app.circleci.com/pipelines/github/bkosaraju/pipeline)
+[![Circle CI](https://circleci.com/gh/bkosaraju/pipeline.svg?style=shield)](https://app.circleci.com/pipelines/github/bkosaraju/pipeline)
+[![Open Issues](https://img.shields.io/github/issues/bkosaraju/pipeline.svg
+)](https://github.com/bkosaraju/pipeline/issues)
+[![Apache license](https://img.shields.io/crates/l/Apache?color=green&label=Apache%202.0&logo=apache&logoColor=red
+)](https://www.apache.org/licenses/LICENSE-2.0.txt)
+[![Version](https://img.shields.io/github/v/tag/bkosaraju/pipeline?label=Current%20Version)]()
+<!-- [![codecov](https://codecov.io/gh/bkosaraju/pipeline/branch/development/graph/badge.svg?token=QHHLFEEHE2)](https://codecov.io/gh/bkosaraju/pipeline) -->
 
 # Pipeline
 
