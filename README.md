@@ -1,3 +1,5 @@
+[![bkosaraju](https://circleci.com/gh/bkosaraju/pipeline.svg?style=svg)](https://app.circleci.com/pipelines/github/bkosaraju/pipeline)
+
 # Pipeline
 
 Pipeline is a application framework to orchestrate and stitch multiple apps to run sequentially.
