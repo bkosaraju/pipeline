@@ -22,12 +22,19 @@
 
 package io.github.bkosaraju.pipeline.functions
 
+import java.time.{ZoneId, ZonedDateTime}
+
 import io.github.bkosaraju.pipeline.database._
 import io.github.bkosaraju.utils.common.{SendMail, Session}
 import io.github.bkosaraju.utils.splunk.CreateSplunkNotification
 import io.github.bkosaraju.pipeline.database.{DbConnection, GetTaskIds, JdbcHelper, JobOrderValidation, JobStatus, PrevTaskStats, PreviousStatus, ReadTaskConfig, TaskStatus}
 import io.github.bkosaraju.pipeline.prometheus.functions.PipelineMetrics
 import io.github.bkosaraju.pipeline.prometheus.model.GaugeMetric
+import collection.JavaConverters.mapAsScalaMap
+import java.time.Instant
+import java.time.ZoneOffset
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
 
 import scala.beans.BeanProperty
 
@@ -40,22 +47,24 @@ class RunJob
   @BeanProperty
   var config: scala.collection.mutable.Map[String, String] = scala.collection.mutable.Map[String, String]()
 
-
   def runJob(config: scala.collection.mutable.Map[String, String]): Unit = {
     var appException : Exception = new Exception
     var appErrorMessage : String = ""
     val jdbi = DbConnection(config.toMap)
+    config.put("jobExecutionStartTimestamp",DateTimeFormatter.ISO_INSTANT.format(ZonedDateTime.ofInstant(Instant.ofEpochMilli(0L), ZoneOffset.UTC)))
     config.put("dbProductName", getDBProductName(jdbi))
     var jobMetrics, taskMetrics = Option(new GaugeMetric)
     var metricInitializer = true
     var taskConfig = collection.mutable.Map[String,String]()
     try {
+      config.foreach(println)
         PreviousStatus(config, jdbi)
       if (config("isRunnable").toBoolean) {
         JobOrderValidation(config.toMap, jdbi)
         JobStatus(config, jdbi)
         for (task <- GetTaskIds(config.toMap, jdbi)) {
           config.put("taskId", task.getTaskId.toString)
+          config.put("taskExecutionStartTimestamp",DateTimeFormatter.ISO_INSTANT.format(ZonedDateTime.ofInstant(Instant.ofEpochMilli(0L), ZoneOffset.UTC)))
           TaskStatus(config, jdbi)
           lazy val TASK_MSG = s"job_id: ${config("jobId")}, job_execution_id: ${config("jobExecutionId")}, task_id: ${config("taskId")} task_execution_id: ${config("taskExecutionId")}"
           logger.info(s"Started Running process for $TASK_MSG")
@@ -69,11 +78,13 @@ class RunJob
           taskMetrics = PipelineMetrics(taskConfig.toMap,"START","TASK", None)
           ActionLauncher(taskConfig)
           config.put("taskExecutionStatus", "END")
+          config.put("taskExecutionEndTimestamp",DateTimeFormatter.ISO_INSTANT.format(ZonedDateTime.ofInstant(Instant.ofEpochMilli(0L), ZoneOffset.UTC)))
           PipelineMetrics( taskConfig.toMap, "END", "TASK", taskMetrics )
           TaskStatus(config, jdbi)
           logger.info(s"Successfully Completed Running process for  ${TASK_MSG}")
         }
         config.put("jobExecutionStatus", "END")
+        config.put("jobExecutionEndTimestamp",DateTimeFormatter.ISO_INSTANT.format(ZonedDateTime.ofInstant(Instant.ofEpochMilli(0L), ZoneOffset.UTC)))
         PipelineMetrics(
           taskConfig.filter( x => ! Seq("taskId","taskExecutionId").contains(x._1)).toMap, "END", "JOB",
            jobMetrics)
@@ -87,6 +98,8 @@ class RunJob
       case e: Exception => {
         config.put("jobExecutionStatus", "FAIL")
         config.put("taskExecutionStatus", "FAIL")
+        config.put("jobExecutionEndTimestamp",DateTimeFormatter.ISO_INSTANT.format(ZonedDateTime.ofInstant(Instant.ofEpochMilli(0L), ZoneOffset.UTC)))
+        config.put("taskExecutionEndTimestamp",DateTimeFormatter.ISO_INSTANT.format(ZonedDateTime.ofInstant(Instant.ofEpochMilli(0L), ZoneOffset.UTC)))
         PipelineMetrics(taskConfig.toMap,"FAIL","TASK", taskMetrics)
         PipelineMetrics( taskConfig.filter( x => ! Seq("taskId","taskExecutionId").contains(x._1)).toMap, "FAIL", "JOB", jobMetrics )
         if (config.contains("taskExecutionId") && config.contains("jobExecutionId")) {
@@ -132,5 +145,8 @@ class RunJob
 object RunJob {
   def apply(config : collection.mutable.Map[String,String]): Unit = {
     (new RunJob()).runJob(config)
+  }
+  def apply(config: java.util.HashMap[String,String] ): Unit = {
+    (new RunJob()).runJob(mapAsScalaMap(config))
   }
 }

@@ -65,7 +65,7 @@ job_execution_timestamp timestamp,
 job_order_timestamp timestamp
 )
 AS $$
-	INSERT INTO meta_audit.job_execution (job_id,job_execution_id,job_execution_status,job_order_timestamp)
+	INSERT INTO job_execution (job_id,job_execution_id,job_execution_status,job_order_timestamp)
 	SELECT $1, max(job_execution_id) over (partition BY job_id ORDER BY job_execution_timestamp desc ) AS max_exec_id, $2, job_order_timestamp
    from
    meta_audit.job_execution where

@@ -57,7 +57,8 @@ class ReadTaskConfig extends JdbcHelper with Session with Exceptions with Config
     val awsUtils = new AwsUtils()
      awsUtils.setConfig(config)
     val taskConfigData = taskConfiguration.map(cfgItem => {
-      if (cfgItem.configType.equalsIgnoreCase("ssm")) {
+      if (Seq("AWS_SSM","SSM").contains(cfgItem.configType.toUpperCase())) {
+      //if (cfgItem.configType.equalsIgnoreCase("ssm")) {
         logger.info(s"extracting secret for ${cfgItem.configValue} from SSM")
         cfgItem.setConfigValue(awsUtils.getSSMValue(cfgItem.getConfigValue))
         cfgItem

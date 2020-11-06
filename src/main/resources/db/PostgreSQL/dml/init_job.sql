@@ -1,8 +1,11 @@
 insert
     into
-    meta_audit.job_execution(
+    job_execution
+    (
     job_id
     ,job_execution_status
     ,job_order_timestamp
+    ,job_execution_start_timestamp
+    ,job_execution_end_timestamp
     )
-    values ( :jobId, :jobExecutionStatus ,:jobOrderTimestamp ) returning  job_execution_id
+    values ( :jobId, :jobExecutionStatus, :jobOrderTimestamp, :jobExecutionStartTimestamp, :jobExecutionEndTimestamp ) returning id

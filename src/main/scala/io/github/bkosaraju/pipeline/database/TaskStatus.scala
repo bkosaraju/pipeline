@@ -42,6 +42,7 @@ class TaskStatus extends JdbcHelper with Session with Config {
       if (!config.contains("taskExecutionId")) {
         val taskInitSql = jdbi.getresource(INIT_TASK_SQL)
         config.put("taskExecutionStatus", "START")
+        config.put("taskExecutionEndTimestamp",null)
         using(jdbi.open()) { handle =>
           config.put("taskExecutionId",
             handle.createQuery(taskInitSql)

@@ -22,6 +22,8 @@
 
 package io.github.bkosaraju.pipeline.database
 
+import java.time.{ZoneId, ZonedDateTime}
+
 import io.github.bkosaraju.utils.common.Session
 import io.github.bkosaraju.pipeline.functions.Config
 import org.jdbi.v3.core.Jdbi
@@ -41,6 +43,7 @@ class JobStatus extends JdbcHelper with Session with Config{
       if (!config.contains("jobExecutionId")) {
         val jobInitSql = jdbi.getresource(INIT_JOB_SQL)
         config.put("jobExecutionStatus", "START")
+        config.put("jobExecutionEndTimestamp",null)
         using(jdbi.open()) { handle =>
           config.put("jobExecutionId",
             handle.createQuery(jobInitSql)

@@ -37,14 +37,14 @@ class DbConnection extends Session with Exceptions {
           params("jdbcURL")
         }
         else {
-          if (params.getOrElse("jdbcType", "").toLowerCase.contains("postgres")) {
-            s"jdbc:" + params.getOrElse("jdbcType","postgresql") + "://" + params.getOrElse("jdbcHostname", "localhost") +
-              ":" + params.getOrElse("jdbcPort", "5432") + "/" + params.getOrElse("jdbcDatabase", "metadb") +
-              "?user=" + params.getOrElse("jdbcUsername", "xxxxx") + "&password=" + params.getOrElse("jdbcPassword", "*********") + "&stringtype=unspecified&sslmode=prefer"
-          } else {
+          if (params.getOrElse("jdbcType", "").toLowerCase.contains("mysql") || params.getOrElse("jdbcType", "").toLowerCase.contains("mariadb")) {
             s"jdbc:" + params.getOrElse("jdbcType", "mysql") + "://" + params.getOrElse("jdbcHostname", "localhost") +
               ":" + params.getOrElse("jdbcPort", "3306") + "/" + params.getOrElse("jdbcDatabase", "metadb") +
               "?user=" + params.getOrElse("jdbcUsername", "meta_user") + "&password=" + params.getOrElse("jdbcPassword", "*********")
+          } else {
+            s"jdbc:" + params.getOrElse("jdbcType","postgresql") + "://" + params.getOrElse("jdbcHostname", "localhost") +
+              ":" + params.getOrElse("jdbcPort", "5432") + "/" + params.getOrElse("jdbcDatabase", "metadb") +
+              "?user=" + params.getOrElse("jdbcUsername", "xxxxx") + "&password=" + params.getOrElse("jdbcPassword", "*********") + "&stringtype=unspecified&sslmode=prefer&currentSchema="+params.getOrElse("jdbcSchema", "meta")
           }
         }
       }
@@ -53,7 +53,7 @@ class DbConnection extends Session with Exceptions {
           logger.error("Unable to Retrieve JDBC parameters" +
             "(the values for either of  jdbcType,jdbcHostname,jdbcPort,jdbcDatabase,jdbcUsername,jdbcPassword not defined) " +
             "please pass the properties file as first argument", e)
-          sys.exit(1)
+          throw e
       }
 
 

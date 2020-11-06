@@ -25,6 +25,7 @@ package io.github.bkosaraju.pipeline.database
 import io.github.bkosaraju.utils.common.Session
 import org.jdbi.v3.core.Jdbi
 import java.lang.{Boolean => BLN}
+import java.time.{ZoneId, ZonedDateTime}
 
 import io.github.bkosaraju.pipeline.functions.{Config, Exceptions}
 import io.github.bkosaraju.pipeline.model
@@ -74,17 +75,19 @@ class PreviousStatus
     }
     val cnfg = collection.mutable.Map(config.toSeq: _*)
 
-    if (Seq("START","FAIL").contains(latestJobStatus.getJobExecutionStatus.toUpperCase)) {
+    if (Seq(START,FAIL).contains(latestJobStatus.getJobExecutionStatus.toUpperCase)) {
       cnfg.put("jobExecutionId", latestJobStatus.getMaxExecutionId.toString)
       cnfg.put("jobId", latestJobStatus.jobId.toString)
       if (BLN.parseBoolean(config("rerunFlag"))) {
         logger.info("job requested to run as rerun mode for previous run")
         cnfg.put("jobExecutionStatus", "RERUN")
+        cnfg.put("jobExecutionEndTimestamp",null)
         latestJobStatus.setJobExecutionStatus("RERUN")
         JobStatus(cnfg, jdbi)
       } else if (BLN.parseBoolean(config("endRunFlag"))) {
         logger.info("job requested to run as end previous run and start a fresh run")
         cnfg.put("jobExecutionStatus", "END")
+        cnfg.put("jobExecutionEndTimestamp",ZonedDateTime.now(ZoneId.systemDefault()).toString)
         JobStatus(cnfg, jdbi)
         latestJobStatus.setJobExecutionStatus("END")
       }

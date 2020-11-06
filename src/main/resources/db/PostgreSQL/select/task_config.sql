@@ -21,9 +21,9 @@ SELECT
 		,jpc.config_type configType
 		,jpc.config_version configVersion
 		,1 priority
-FROM meta.job_task_config jpc
+FROM job_task_config jpc
 INNER JOIN
-meta.job_task_order jpo
+job_task_order jpo
 ON
     jpc.task_id=jpo.task_id AND
     jpc.job_id=jpo.job_id AND
@@ -42,7 +42,7 @@ SELECT
 	,1 configVersion
 	,2 priority
 FROM
-meta.job_config
+job_config
 UNION ALL
 SELECT
   cast( :jobId as SMALLINT) AS  jobId
@@ -53,7 +53,7 @@ SELECT
 	,1 configVersion
 	,3 priority
 FROM
-meta.global_config
+global_config
 UNION ALL
 SELECT
   cast( :jobId as SMALLINT) AS  jobId
@@ -63,9 +63,9 @@ SELECT
 	,'static' configType
 	,1 configVersion
 	,3 priority
-FROM meta.job jb
+FROM job jb
 WHERE
-jb.job_id= cast( :jobId as SMALLINT)
+jb.id= cast( :jobId as SMALLINT)
 UNION ALL
 SELECT
   cast( :jobId as SMALLINT) AS  jobId
@@ -75,7 +75,7 @@ SELECT
 	,'static' configType
 	,1 configVersion
 	,3 priority
-FROM meta.task jb
+FROM task jb
 WHERE
-jb.task_id= cast( :taskId as SMALLINT)
+jb.id= cast( :taskId as SMALLINT)
 ) config_data ) res WHERE res.rk=1
